@@ -58,7 +58,7 @@ Resources:
         - FromPort: 80
           ToPort: 80
           SourceSecurityGroupId: !Ref ALBSecurityGroup
-          IpProtocol: tcp
+          IpProtocol: TCP
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -68,3 +68,29 @@ Resources:
         - Key: "ALBsecGroup"
           Value: "ALBSG"
       VpcId: vpc-2957464e
+  ALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties: 
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      Name: ALBtargetgroupCF
+      Port: 80
+      Protocol: HTTP
+      Tags: 
+        - Key: "ALBTG"
+          Value: "ALBTG"
+      Targets:
+          - Id: !Ref TiinanKone
+            Port: 80
+      TargetType: instance
+      VpcId: vpc-2957464e
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions: 
+        - TargetGroupArn: !Ref ALBTargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref TiinanALB
+      Port: 80
+      Protocol: HTTP
