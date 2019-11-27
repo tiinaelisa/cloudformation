@@ -30,6 +30,8 @@ Resources:
     Properties: 
       InstanceType: !Ref TiinaPreferredInstanceType
       ImageId: !Ref LatestAmiId
+      SecurityGroups: 
+      - !Ref EC2SecurityGroup
   TiinanALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -42,3 +44,11 @@ Resources:
         - Key: "tiinaCFALB"
           Value: "tiinaCFALBvalue"
       Type: application
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "SG for EC2"
+      GroupName: TiinaEC2securityGroupCF
+      Tags: 
+        - Key: "EC2secGroup"
+          Value: "EC2SG"
