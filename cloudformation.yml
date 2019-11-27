@@ -4,4 +4,4 @@ Resources:
   TiinanSanko:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: tiina-bucket
+      BucketName: tiina-CFbucket
