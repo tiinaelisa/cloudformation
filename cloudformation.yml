@@ -44,6 +44,8 @@ Resources:
         - Key: "tiinaCFALB"
           Value: "tiinaCFALBvalue"
       Type: application
+      SecurityGroups:
+      - !Ref ALBSecurityGroup
   EC2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -52,3 +54,12 @@ Resources:
       Tags: 
         - Key: "EC2secGroup"
           Value: "EC2SG"
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "SG for ALB"
+      GroupName: TiinaALBsecurityGroupCF
+      Tags: 
+        - Key: "ALBsecGroup"
+          Value: "ALBSG"
+      VpcId: vpc-2957464e
