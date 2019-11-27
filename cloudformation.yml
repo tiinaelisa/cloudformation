@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: "2010-09-09"
 
 Description: An exercise template
 
+Parameters:
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  TiinaPreferredInstanceType:
+    Type: String
+    Default: 't3.nano'
+
 Resources:
   TiinanSanko:
     Type: AWS::S3::Bucket
@@ -12,3 +20,8 @@ Resources:
     Properties: 
       QueueName: tiinan-jono
       MessageRetentionPeriod: 300
+  TiinanKone:
+    Type: AWS::EC2::Instance
+    Properties: 
+      InstanceType: !Ref TiinaPreferredInstanceType
+      ImageId: !Ref LatestAmiId
