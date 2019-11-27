@@ -10,6 +10,11 @@ Parameters:
     Type: String
     Default: 't3.nano'
 
+Outputs:
+  LoadBalancerDNSName:
+    Description: The DNSName of the TiinanALB load balancer
+    Value: !GetAtt TiinanALB.DNSName
+
 Resources:
   TiinanSanko:
     Type: AWS::S3::Bucket
@@ -25,3 +30,15 @@ Resources:
     Properties: 
       InstanceType: !Ref TiinaPreferredInstanceType
       ImageId: !Ref LatestAmiId
+  TiinanALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: TiinanCFALB
+      Scheme: internet-facing
+      Subnets: 
+        - subnet-13a2bf48
+        - subnet-66975700
+      Tags: 
+        - Key: "tiinaCFALB"
+          Value: "tiinaCFALBvalue"
+      Type: application
