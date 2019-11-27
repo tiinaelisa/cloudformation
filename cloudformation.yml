@@ -54,6 +54,11 @@ Resources:
       Tags: 
         - Key: "EC2secGroup"
           Value: "EC2SG"
+      SecurityGroupIngress: 
+        - FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+          IpProtocol: tcp
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
