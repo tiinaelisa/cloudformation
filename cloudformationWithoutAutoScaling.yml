@@ -25,9 +25,17 @@ Resources:
     Properties: 
       QueueName: tiinan-jono
       MessageRetentionPeriod: 300
+  TiinanKone:
+    Type: AWS::EC2::Instance
+    Properties: 
+      InstanceType: !Ref TiinaPreferredInstanceType
+      ImageId: !Ref LatestAmiId
+      SecurityGroups: 
+      - !Ref EC2SecurityGroup
   TiinanALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
+      Name: TiinanCFALB
       Scheme: internet-facing
       Subnets: 
         - subnet-13a2bf48
@@ -60,23 +68,21 @@ Resources:
         - Key: "ALBsecGroup"
           Value: "ALBSG"
       VpcId: vpc-2957464e
-      SecurityGroupIngress:
-        - FromPort: 80
-          ToPort: 80
-          IpProtocol: TCP
-          CidrIp: 109.204.206.210/32
-
   ALBTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties: 
       HealthCheckEnabled: true
       HealthCheckIntervalSeconds: 30
       HealthCheckProtocol: HTTP
+      Name: ALBtargetgroupCF
       Port: 80
       Protocol: HTTP
       Tags: 
         - Key: "ALBTG"
           Value: "ALBTG"
+      Targets:
+          - Id: !Ref TiinanKone
+            Port: 80
       TargetType: instance
       VpcId: vpc-2957464e
   ALBListener:
@@ -88,32 +94,3 @@ Resources:
       LoadBalancerArn: !Ref TiinanALB
       Port: 80
       Protocol: HTTP
-  AutoScalingGroup:
-    Type: AWS::AutoScaling::AutoScalingGroup
-    Properties:
-      VPCZoneIdentifier:
-        - subnet-13a2bf48
-        - subnet-66975700
-      DesiredCapacity: 1
-      HealthCheckGracePeriod: 5
-      HealthCheckType: EC2
-      LaunchConfigurationName: !Ref LaunchConfigurationCF
-      MaxSize: 3
-      MinSize: 1
-      TargetGroupARNs: 
-        - !Ref ALBTargetGroup
-  LaunchConfigurationCF:
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      ImageId: !Ref LatestAmiId
-      InstanceType: !Ref TiinaPreferredInstanceType
-      SecurityGroups: 
-        - !GetAtt EC2SecurityGroup.GroupId
-      UserData:
-        Fn::Base64:
-          !Sub |
-            #!/bin/bash 
-            amazon-linux-extras install epel;
-            amazon-linux-extras install nginx1;
-            systemctl start nginx;
-
